@@ -1,0 +1,282 @@
+{
+    "North America": {
+        "countries": {
+            "Alaska": [
+                "Northwest America",
+                "Alberta",
+                "Kamchatka"
+            ],
+            "Alberta": [
+                "Alaska",
+                "Ontario",
+                "Northwest America",
+                "Western America"
+            ],
+            "Ontario": [
+                "Alberta",
+                "Quebec",
+                "Northwest America",
+                "Eastern America",
+                "Greenland",
+                "Western America"
+            ],
+            "Western America": [
+                "Alberta",
+                "Ontario",
+                "Central America",
+                "Eastern America"
+            ],
+            "Eastern America": [
+                "Ontario",
+                "Quebec",
+                "Central America",
+                "Western America"
+            ],
+            "Quebec": [
+                "Greenland",
+                "Ontario",
+                "Eastern America"
+            ],
+            "Central America": [
+                "Eastern America",
+                "Western America",
+                "Venezuela"
+            ],
+            "Greenland": [
+                "Ontario",
+                "Quebec",
+                "Northwest America",
+                "Iceland"
+            ],
+            "Northwest America": [
+                "Alberta",
+                "Alaska",
+                "Ontario",
+                "Greenland"
+            ]
+        },
+        "extra_armies": 5
+    },
+    "South America": {
+        "countries": {
+            "Brazil": [
+                "Venezuela",
+                "Peru",
+                "Argentina",
+                "North Africa"
+            ],
+            "Venezuela": [
+                "Brazil",
+                "Peru",
+                "Central America"
+            ],
+            "Peru": [
+                "Brazil",
+                "Venezuela",
+                "Argentina"
+            ],
+            "Argentina": [
+                "Peru",
+                "Brazil"
+            ]
+        },
+        "extra_armies": 2
+    },
+    "Australia": {
+        "countries": {
+            "Western Australia": [
+                "Eastern Australia",
+                "Indoneasia",
+                "Papua New Guinea"
+            ],
+            "Eastern Australia": [
+                "Papua New Guinea",
+                "Western Australia"
+            ],
+            "Indoneasia": [
+                "Siam",
+                "Papua New Guinea",
+                "Western Australia"
+            ],
+            "Papua New Guinea": [
+                "Indoneasia",
+                "Eastern Australia",
+                "Western Australia"
+            ]
+        },
+        "extra_armies": 2
+    },
+    "Europe": {
+        "countries": {
+            "Ukraine": [
+                "Skandinavia",
+                "Northern Europe",
+                "Southern Europe",
+                "Middle East",
+                "Ural",
+                "Afganistan"
+            ],
+            "Skandinavia": [
+                "Iceland",
+                "Great Britain",
+                "Northern Europe",
+                "Ukraine"
+            ],
+            "Iceland": [
+                "Skandinavia",
+                "Great Britain",
+                "Greenland"
+            ],
+            "Great Britain": [
+                "Iceland",
+                "Skandinavia",
+                "Northern Europe",
+                "Western Europe"
+            ],
+            "Northern Europe": [
+                "Great Britain",
+                "Skandinavia",
+                "Ukraine",
+                "Western Europe",
+                "Southern Europe"
+            ],
+            "Western Europe": [
+                "Great Britain",
+                "Northern Europe",
+                "Southern Europe",
+                "North Africa"
+            ],
+            "Southern Europe": [
+                "Ukraine",
+                "Middle East",
+                "Egypt",
+                "North Africa",
+                "Western Europe",
+                "Northern Europe"
+            ]
+        },
+        "extra_armies": 5
+    },
+    "Asia": {
+        "countries": {
+            "Yakutsk": [
+                "Siberia",
+                "Irkutsk",
+                "Kamchatka"
+            ],
+            "Siberia": [
+                "Yakutsk",
+                "Irkutsk",
+                "Mongolia",
+                "China",
+                "Ural"
+            ],
+            "Kamchatka": [
+                "Yakutsk",
+                "Irkutsk",
+                "Japan",
+                "Mongolia",
+                "Alaska"
+            ],
+            "Irkutsk": [
+                "Siberia",
+                "Kamchatka",
+                "Yakutsk",
+                "Mongolia"
+            ],
+            "Ural": [
+                "Ukraine",
+                "Afganistan",
+                "China",
+                "Siberia"
+            ],
+            "Japan": [
+                "Kamchatka",
+                "Mongolia"
+            ],
+            "Mongolia": [
+                "China",
+                "Siberia",
+                "Irkutsk",
+                "Kamchatka",
+                "Japan"
+            ],
+            "China": [
+                "Afganistan",
+                "Ural",
+                "Siberia",
+                "Mongolia",
+                "Siam",
+                "India"
+            ],
+            "Middle East": [
+                "India",
+                "Afganistan",
+                "Egypt",
+                "East Africa",
+                "Southern Europe",
+                "Ukraine"
+            ],
+            "India": [
+                "Middle East",
+                "Afganistan",
+                "China",
+                "Siam"
+            ],
+            "Siam": [
+                "China",
+                "India",
+                "Indoneasia"
+            ],
+            "Afganistan": [
+                "Ukraine",
+                "Ural",
+                "China",
+                "India",
+                "Middle East"
+            ]
+        },
+        "extra_armies": 7
+    },
+    "Africa": {
+        "countries": {
+            "Congo": [
+                "North Africa",
+                "East Africa",
+                "South Africa"
+            ],
+            "East Africa": [
+                "Egypt",
+                "North Africa",
+                "Congo",
+                "South Africa",
+                "Madagascar",
+                "Middle East"
+            ],
+            "Egypt": [
+                "North Africa",
+                "East Africa",
+                "Southern Europe",
+                "Middle East"
+            ],
+            "Madagascar": [
+                "South Africa",
+                "East Africa"
+            ],
+            "North Africa": [
+                "Egypt",
+                "East Africa",
+                "Congo",
+                "Brazil",
+                "Western Europe",
+                "Southern Europe"
+            ],
+            "South Africa": [
+                "Congo",
+                "East Africa",
+                "Madagascar"
+            ]
+        },
+        "extra_armies": 3
+    }
+}

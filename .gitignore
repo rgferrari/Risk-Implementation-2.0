@@ -1,0 +1,8 @@
+**/__pycache__
+
+# Folders
+calls/*
+!calls/.gitkeep
+
+logs/*
+!logs/.gitkeep
