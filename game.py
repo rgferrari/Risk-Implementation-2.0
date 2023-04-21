@@ -55,12 +55,10 @@ class Game:
 
         self.turn = 0
 
-        if random.randint(1,2) == 1:
-            self.player_1.state = "mobilizing"
-            self.player_2.state = "waiting"
-        else:
-            self.player_2.state = "mobilizing"
-            self.player_1.state = "waiting"
+        coin = random.randint(1,2)
+        self.player_1.state = "mobilizing" if coin == 1 else "waiting"
+        self.player_2.state = "mobilizing" if coin == 2 else "waiting"
+        self.active_player = self.player_1 if coin == 1 else self.player_2
 
         self.player_1.control.call_count = 0
         self.player_2.control.call_count = 0
@@ -71,12 +69,8 @@ class Game:
         self.player_1.control.data_path = Path("Logs/player_1.json")
         self.player_2.control.data_path = Path("Logs/player_2.json")
 
-        self.active_player = self.player_1
-
         self.winner = None
-
         self.map_changed = True
-
         self.log = False
 
     def _distribute_new_troops(self, player : Player):
@@ -228,9 +222,7 @@ class Game:
                     return True
                 else:
                     countries_visited.append(neighbour)
-                    if self._is_connected(neighbour, 
-                                          country_2,
-                                          countries_visited):
+                    if self._is_connected(neighbour, country_2, countries_visited):
                         return True
         return False
 
