@@ -55,9 +55,12 @@ class Game:
 
         self.turn = 0
 
-        # TODO flip a coin
-        self.player_1.state = "mobilizing"
-        self.player_2.state = "waiting"
+        if random.randint(1,2) == 1:
+            self.player_1.state = "mobilizing"
+            self.player_2.state = "waiting"
+        else:
+            self.player_2.state = "mobilizing"
+            self.player_1.state = "waiting"
 
         self.player_1.control.call_count = 0
         self.player_2.control.call_count = 0
@@ -146,8 +149,7 @@ class Game:
         with open(path, "w") as outfile:
             outfile.write(json_data)
 
-    # TODO
-    # Make a _update_countries_data where it updates only the changeable data
+    # TODO Make a _update_countries_data where it updates only the changeable data
     def _create_countries_data(self) -> dict:
         """Create a dict with info about all countries
 
@@ -169,8 +171,7 @@ class Game:
 
         return countries_data
 
-    # TODO
-    # Make a _update_continents_data where it updates only the changeable data
+    # TODO Make a _update_continents_data where it updates only the changeable data
     def _create_continents_data(self) -> dict:
         """Create a dict with info about all continents
 
@@ -280,8 +281,7 @@ class Game:
 
         for country in player.countries_owned:
                 for neighbour in country.neighbours:
-                    # TODO should be neighbour.owner != player
-                    if self.world.country_dict[neighbour.name].owner != player:
+                    if neighbour.owner != player:
                         if country.name not in player.border_countries:
                             player.border_countries[country.name] = []
                             player.border_countries[country.name].append(neighbour.name)
