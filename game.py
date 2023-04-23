@@ -133,21 +133,6 @@ class Game:
         
         return json_data
 
-    # TODO put this inside the create_data functions and delete this function
-    def _update_json_file(self, path: str, json_data: str):
-        """Update a json file with the desired data
-
-        Parameters
-        ----------
-        path : str
-            `string` with the path to the json file
-        json_data : str
-            `string` with the data to be writen in the file
-        """
-
-        with open(path, "w") as outfile:
-            outfile.write(json_data)
-
     # TODO Make a _update_countries_data where it updates only the changeable data
     def _create_countries_data(self) -> dict:
         """Create a dict with info about all countries
@@ -363,10 +348,12 @@ class Game:
         p1_json_data = self._create_call_data(1, self.player_1.control.call_count)
         p2_json_data = self._create_call_data(2, self.player_2.control.call_count)
 
-        self._update_json_file(self.player_1.control.call_path, p1_json_data)
+        with open(self.player_1.control.call_path, "w") as f: 
+            f.write(p1_json_data)
         self.last_m_time_p1 = os.path.getmtime(self.player_1.control.call_path)
         
-        self._update_json_file(self.player_2.control.call_path, p2_json_data)
+        with open(self.player_2.control.call_path, "w") as f:
+            f.write(p2_json_data)
         self.last_m_time_p2 = os.path.getmtime(self.player_2.control.call_path)
 
     def _random_draft(self):
@@ -403,8 +390,10 @@ class Game:
         p1_json_data = self._create_player_data(continents_data, countries_data, self.player_1)
         p2_json_data = self._create_player_data(continents_data, countries_data, self.player_2)
 
-        self._update_json_file(self.player_1.control.data_path, p1_json_data)
-        self._update_json_file(self.player_2.control.data_path, p2_json_data)
+        with open(self.player_1.control.data_path, "w") as f:
+            f.write(p1_json_data)
+        with open(self.player_2.control.data_path, "w") as f:
+            f.write(p2_json_data)
 
     def wait_for_agent(self, player: Player):
         """Wait for the player's declaration of action.
@@ -597,24 +586,18 @@ class Game:
         elif player.state == "conquering":
             print("Player", player.id, "cannot pass_turn during a conquering state")
 
-    # TODO Why does it receive the id of the player and not its object?
-    def execute_player_action(self, id : int):
+    def execute_player_action(self, player : Player):
         """Read the call_data of the player and perform the action wrote on it.
 
         Parameters
         ----------
-        id : int
-            The `id` of the player performing the action.
+        player : Player
+            The `Player` object that is performing the action.
         """
 
         self.map_changed = False
 
-        if id == 1:
-            player = self.player_1
-            enemy = self.player_2
-        elif id == 2:
-            player = self.player_2
-            enemy = self.player_1
+        enemy = self.player_2 if player.id == 1 else self.player_1
 
         call_data = player.control.call_data
 
@@ -634,59 +617,37 @@ class Game:
             self._pass_turn(player, enemy)
 
         else:
-            print("Player", id, "is trying to use a command that does not exist (", call_data["command"]["name"], ")")
+            print("Player", player.id, "is trying to use a command that does not exist (", call_data["command"]["name"], ")")
 
         #print('Player:', id, 'count:', call_data['count'])
-                
-def print_game_result(game: Game, total_time: int, path: str):
-    """Write the game result to a file.
-    
-    Parameters
-    ----------
-    game : Game
-        The instance of the game played.
-    total_time : int
-        The total duration of the game.
-    path : str
-        The path to the file where the result will be written.
-    """
-    
-    text = '\nWinner: ' + str(game.winner.id) + ", Winner Troops: " + str(game.winner.n_total_troops) + ", Player Sate json Writes: " + str(game.player_1.data_count) + ", P1 Call json Writes: " + str(game.player_1.control.call_count) + ", P2 Call json Writes: " + str(game.player_2.control.call_count) + ", Time: " + str(total_time) 
 
-    path = Path('Risk-Agents/tests/' + path)
+def print_game_result(game: Game, game_duration: int):
+    winner_txt = f'Winner: P{game.winner.id}'
+    n_troops_txt = f'Number of Troops on the Board: {game.winner.n_total_troops}'
+    p1_n_actions = f'P1 Number of Actions: {game.player_1.control.call_count}'
+    p2_n_actions = f'P2 Number of Actions: {game.player_2.control.call_count}'
+    n_game_turns = f'Number of Game Turns: {game.turn}'
+    game_duration_txt = f'Time: {game_duration}'
 
-    with open(path, 'a') as openfile:
-        openfile.write(text)
+    print(winner_txt)
+    print(n_troops_txt)
+    print(p1_n_actions)
+    print(p2_n_actions)
+    print(n_game_turns)
+    print(game_duration_txt)
 
 if __name__ == '__main__':
-    is_testing = False
-    path = None
-
-    args = sys.argv
-    if len(args) == 2:
-        path = args[1]
-        is_testing = True
-
     start_time = time.perf_counter()
-
     game = Game(log=False)
 
     while game.turn < 150:
         game.wait_for_agent(game.active_player)
 
-        game.execute_player_action(game.active_player.id)
+        game.execute_player_action(game.active_player)
 
         if game.winner != None:
-            total_time = time.perf_counter() - start_time
-            print('Winner:', game.winner.id, 
-                    "\nP1 Troops:", game.player_1.n_total_troops,
-                    "\nPlayer Sate json Writes:", game.player_1.data_count,
-                    "\nP1 Call json Writes:", game.player_1.control.call_count,
-                    "\nP2 Call json Writes:", game.player_2.control.call_count,
-                    "\nTime:", total_time)
-
-            if is_testing:
-                print_game_result(game, total_time, path)
+            game_duration = time.perf_counter() - start_time
+            print_game_result(game, game_duration)
             
             if game.winner.id == 1:
                 game.player_1.state = "winner"
