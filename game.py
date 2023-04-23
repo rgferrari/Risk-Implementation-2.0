@@ -36,10 +36,6 @@ class Game:
 
     Methods
     -------
-    create_command_files()
-
-    random_draft()
-
     update_players_data()
 
     wait_for_agent(player : Player)
@@ -48,7 +44,7 @@ class Game:
 
     """
 
-    def __init__(self):
+    def __init__(self, log=False):
         self.world = World('worlds/classic.json')
         self.player_1 = Player(1,40)
         self.player_2 = Player(2,40)
@@ -71,7 +67,16 @@ class Game:
 
         self.winner = None
         self.map_changed = True
-        self.log = False
+        self.log = log
+
+        self._setup()
+
+    def _setup(self):
+        self._create_command_files()
+        self._random_draft()
+        self._distribute_new_troops(self.active_player)
+        self._update_continents_owners()
+        self.update_players_data()
 
     def _distribute_new_troops(self, player : Player):
         """Distribute new troops to a player based on the number of countries\\
@@ -352,7 +357,7 @@ class Game:
 
         return json_data
 
-    def create_command_files(self):
+    def _create_command_files(self):
         """Create p1 and p2 command files used to declare their actions."""
 
         p1_json_data = self._create_call_data(1, self.player_1.control.call_count)
@@ -364,7 +369,7 @@ class Game:
         self._update_json_file(self.player_2.control.call_path, p2_json_data)
         self.last_m_time_p2 = os.path.getmtime(self.player_2.control.call_path)
 
-    def random_draft(self):
+    def _random_draft(self):
         """Randomly distribute countries and troops between players."""
 
         random.shuffle(self.world.country_list)
@@ -615,7 +620,6 @@ class Game:
 
         if self.log:
             print(call_data)
-            pass
                 
         if call_data["command"]["name"] == "attack":
             self._attack(player, enemy)
@@ -663,26 +667,9 @@ if __name__ == '__main__':
         path = args[1]
         is_testing = True
 
-    start_time = time.time()
+    start_time = time.perf_counter()
 
-    game = Game()
-
-    game.log = False
-
-    game.create_command_files()
-    #print("Criou os command files")
-
-    game.random_draft()
-    #print("Distribuiu os paises")
-
-    game._distribute_new_troops(game.active_player)
-
-    game._update_continents_owners()
-
-    game.update_players_data()
-    #print("Atualizou os dados dos player")
-
-    # game.create_unity_world_data_log()
+    game = Game(log=False)
 
     while game.turn < 150:
         game.wait_for_agent(game.active_player)
@@ -690,7 +677,7 @@ if __name__ == '__main__':
         game.execute_player_action(game.active_player.id)
 
         if game.winner != None:
-            total_time = time.time() - start_time
+            total_time = time.perf_counter() - start_time
             print('Winner:', game.winner.id, 
                     "\nP1 Troops:", game.player_1.n_total_troops,
                     "\nPlayer Sate json Writes:", game.player_1.data_count,
