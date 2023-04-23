@@ -36,12 +36,8 @@ class Game:
 
     Methods
     -------
-    update_players_data()
-
-    wait_for_agent(player : Player)
-
-    execute_player_action(id : int)
-
+    run(max_turns=150)
+        Run the game.
     """
 
     def __init__(self, log=False):
@@ -76,7 +72,7 @@ class Game:
         self._random_draft()
         self._distribute_new_troops(self.active_player)
         self._update_continents_owners()
-        self.update_players_data()
+        self._update_players_data()
 
     def _distribute_new_troops(self, player : Player):
         """Distribute new troops to a player based on the number of countries\\
@@ -381,7 +377,7 @@ class Game:
             country = random.choice(self.player_2.countries_owned)
             self.player_2.set_new_troops(random.randint(0, self.player_2.n_new_troops), country)
 
-    def update_players_data(self):
+    def _update_players_data(self):
         """Update players' data files with all the current game states."""
 
         countries_data = self._create_countries_data()
@@ -395,14 +391,10 @@ class Game:
         with open(self.player_2.control.data_path, "w") as f:
             f.write(p2_json_data)
 
-    def wait_for_agent(self, player: Player):
-        """Wait for the player's declaration of action.
-        
-        Parameters
-        ----------
-        player : Player
-            The `player` that is currently making an action.
-        """
+    def _wait_for_active_player(self):
+        """Wait for the player's declaration of action."""
+
+        player = self.active_player
 
         current_time = os.path.getmtime(player.control.call_path)
 
@@ -410,6 +402,7 @@ class Game:
 
         while last_count == player.control.call_count:
             while player.control.last_m_time == current_time:
+                # TODO Maybe the deadlock is here
                 current_time = os.path.getmtime(player.control.call_path)
 
             while True:
@@ -586,17 +579,14 @@ class Game:
         elif player.state == "conquering":
             print("Player", player.id, "cannot pass_turn during a conquering state")
 
-    def execute_player_action(self, player : Player):
-        """Read the call_data of the player and perform the action wrote on it.
-
-        Parameters
-        ----------
-        player : Player
-            The `Player` object that is performing the action.
+    def _execute_active_player_action(self):
+        """Read the call_data of the active player and perform the action\\
+        that was written on it.
         """
 
         self.map_changed = False
 
+        player = self.active_player
         enemy = self.player_2 if player.id == 1 else self.player_1
 
         call_data = player.control.call_data
@@ -621,44 +611,69 @@ class Game:
 
         #print('Player:', id, 'count:', call_data['count'])
 
-def print_game_result(game: Game, game_duration: int):
-    winner_txt = f'Winner: P{game.winner.id}'
-    n_troops_txt = f'Number of Troops on the Board: {game.winner.n_total_troops}'
-    p1_n_actions = f'P1 Number of Actions: {game.player_1.control.call_count}'
-    p2_n_actions = f'P2 Number of Actions: {game.player_2.control.call_count}'
-    n_game_turns = f'Number of Game Turns: {game.turn}'
-    game_duration_txt = f'Time: {game_duration}'
+    def _print_game_result(self, game_duration: int):
+        """Print the most important game's statuses."""
 
-    print(winner_txt)
-    print(n_troops_txt)
-    print(p1_n_actions)
-    print(p2_n_actions)
-    print(n_game_turns)
-    print(game_duration_txt)
+        winner_txt = f'Winner: P{self.winner.id}'
+        n_troops_txt = f'Number of Troops on the Board: {self.winner.n_total_troops}'
+        p1_n_actions = f'P1 Number of Actions: {self.player_1.control.call_count}'
+        p2_n_actions = f'P2 Number of Actions: {self.player_2.control.call_count}'
+        n_game_turns = f'Number of Game Turns: {self.turn}'
+        game_duration_txt = f'Time: {game_duration}'
+
+        print(winner_txt)
+        print(n_troops_txt)
+        print(p1_n_actions)
+        print(p2_n_actions)
+        print(n_game_turns)
+        print(game_duration_txt)
+
+    def _check_for_winner(self) -> bool:
+        """Check if the game winner is defined. If yes, print the game result\\
+        and update the player's states to winner or loser deppending on who won.
+
+        Returns
+        -------
+        bool
+            True if there is a winner.
+
+            False if there is not a winner.
+        """
+
+        if self.winner != None:
+            game_duration = time.perf_counter() - self.time_start
+            self._print_game_result(game_duration)
+            
+            if self.winner.id == 1:
+                self.player_1.state = "winner"
+                self.player_2.state = "loser"
+
+            elif self.winner.id == 2:
+                self.player_1.state = "loser"
+                self.player_2.state = "winner"
+
+            return True
+        else:
+            return False
+
+    def run(self, max_turns: int=150):
+        """Run the game.
+
+        Parameters
+        ----------
+        max_turns : int, default: 150
+            Maximum number of turns in the game.
+        """
+
+        self.time_start = time.perf_counter()
+        while self.turn < max_turns:
+            self._wait_for_active_player()
+            self._execute_active_player_action()
+            has_winner = self._check_for_winner()
+            self._update_players_data()
+            if has_winner: 
+                break
 
 if __name__ == '__main__':
-    start_time = time.perf_counter()
-    game = Game(log=False)
-
-    while game.turn < 150:
-        game.wait_for_agent(game.active_player)
-
-        game.execute_player_action(game.active_player)
-
-        if game.winner != None:
-            game_duration = time.perf_counter() - start_time
-            print_game_result(game, game_duration)
-            
-            if game.winner.id == 1:
-                game.player_1.state = "winner"
-                game.player_2.state = "loser"
-
-            elif game.winner.id == 2:
-                game.player_1.state = "loser"
-                game.player_2.state = "winner"
-            
-            game.update_players_data()
-            game.turn += 1
-            break
-                
-        game.update_players_data()
+    game = Game(log=True)
+    game.run()
